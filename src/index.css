@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+:root {
+  --background: #0f0f0f;
+  --foreground: #ffffff;
+  --primary: #e50914;
+  --secondary: #221f1f;
+  --muted: #717171;
+  --border: #333333;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Reserve space for the fixed top navigation (height: 4rem) so it doesn't overlap content */
+  padding-top: 4rem;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff4444;
+}
+
+/* Auth modal gradient background */
+.auth-gradient-bg {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(from 180deg at 50% 50%, rgba(99,102,241,0.12), rgba(236,72,153,0.12), rgba(249,115,22,0.12), rgba(99,102,241,0.12));
+  filter: blur(40px) saturate(120%);
+  opacity: 0.9;
+  animation: gradientShift 12s linear infinite;
+}
+
+@keyframes gradientShift {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(180deg); }
+  100% { transform: translateY(0) rotate(360deg); }
+}
+
+/* Fade-in helper used by modal */
+.animate-fade-in {
+  animation: fadeIn 240ms ease-out;
+}
+
+/* Reserve space for the fixed top navigation so page content isn't covered */
+body {
+  padding-top: 4rem;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

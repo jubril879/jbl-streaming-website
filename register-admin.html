@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Admin Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .success {
+            color: #28a745;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: #dc3545;
+            margin-top: 20px;
+        }
+
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #dee2e6;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Register Admin Account</h1>
+        <p>This tool will register the admin account in your browser's localStorage so you can log in to the admin
+            panel.</p>
+
+        <h3>Admin Credentials:</h3>
+        <ul>
+            <li><strong>Email:</strong> admin@cinemahub.com</li>
+            <li><strong>Password:</strong> admin123</li>
+            <li><strong>Admin Code:</strong> ADMIN123</li>
+        </ul>
+
+        <button onclick="registerAdmin()">Register Admin Account</button>
+        <button onclick="checkAdmin()">Check if Admin Exists</button>
+        <button onclick="clearStorage()">Clear All Data (Reset)</button>
+
+        <div id="message"></div>
+
+        <h3>Manual Registration (Alternative):</h3>
+        <p>If the button doesn't work, open your browser's Developer Tools (F12), go to the Console tab, and paste this
+            code:</p>
+        <pre>
+
+const adminUser = {
+  name: "Admin",
+  email: "admin@cinemahub.com",
+  password: "admin123",
+  role: "admin",
+  createdAt: new Date().toISOString()
+};
+
+const users = JSON.parse(localStorage.getItem("users") || "[]");
+const adminExists = users.some(u => u.email === "admin@cinemahub.com");
+
+if (!adminExists) {
+  users.push(adminUser);
+  localStorage.setItem("users", JSON.stringify(users));
+  console.log("Admin account registered:", adminUser);
+} else {
+  console.log("Admin account already exists");
+}
+        </pre>
+    </div>
+
+    <script>
+        function registerAdmin() {
+            try {
+                const adminUser = {
+                    name: "Admin",
+                    email: "admin@cinemahub.com",
+                    password: "admin123",
+                    role: "admin",
+                    createdAt: new Date().toISOString()
+                };
+
+                const users = JSON.parse(localStorage.getItem("users") || "[]");
+                const adminExists = users.some(u => u.email === "admin@cinemahub.com");
+
+                if (!adminExists) {
+                    users.push(adminUser);
+                    localStorage.setItem("users", JSON.stringify(users));
+                    document.getElementById("message").innerHTML = '<div class="success"> Admin account registered successfully!</div>';
+                    console.log("Admin account registered:", adminUser);
+                } else {
+                    document.getElementById("message").innerHTML = '<div class="success">ℹ  Admin account already exists.</div>';
+                }
+            } catch (error) {
+                document.getElementById("message").innerHTML = '<div class="error">❌ Error registering admin: ' + error.message + '</div>';
+            }
+        }
+
+        function checkAdmin() {
+            try {
+                const users = JSON.parse(localStorage.getItem("users") || "[]");
+                const adminExists = users.some(u => u.email === "admin@cinemahub.com");
+
+                if (adminExists) {
+                    const admin = users.find(u => u.email === "admin@cinemahub.com");
+                    document.getElementById("message").innerHTML = '<div class="success">✅ Admin account found: ' + JSON.stringify(admin, null, 2) + '</div>';
+                } else {
+                    document.getElementById("message").innerHTML = '<div class="error">❌ Admin account not found.</div>';
+                }
+            } catch (error) {
+                document.getElementById("message").innerHTML = '<div class="error">❌ Error checking admin: ' + error.message + '</div>';
+            }
+        }
+
+        function clearStorage() {
+            if (confirm("Are you sure you want to clear all localStorage data? This will remove all users and data.")) {
+                localStorage.clear();
+                document.getElementById("message").innerHTML = '<div class="success">🗑️ All data cleared. You can now register the admin account again.</div>';
+            }
+        }
+    </script>
+</body>
+
+</html>
