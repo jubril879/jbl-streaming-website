@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 export default function Footer() {
   return (
     <footer className="bg-secondary border-t border-border mt-12">
@@ -7,19 +9,19 @@ export default function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Company</h3>
             <ul className="space-y-2 text-foreground/70 text-sm">
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/about" className="hover:text-foreground transition">
                   About Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/careers" className="hover:text-foreground transition">
                   Careers
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/press" className="hover:text-foreground transition">
                   Press
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -27,19 +29,19 @@ export default function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Support</h3>
             <ul className="space-y-2 text-foreground/70 text-sm">
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/help-center" className="hover:text-foreground transition">
                   Help Center
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/contact" className="hover:text-foreground transition">
                   Contact Us
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/faq" className="hover:text-foreground transition">
                   FAQ
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -47,19 +49,19 @@ export default function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Legal</h3>
             <ul className="space-y-2 text-foreground/70 text-sm">
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/privacy" className="hover:text-foreground transition">
                   Privacy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/terms" className="hover:text-foreground transition">
                   Terms
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/cookies" className="hover:text-foreground transition">
                   Cookies
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -67,17 +69,17 @@ export default function Footer() {
             <h3 className="font-semibold text-foreground mb-4">Follow</h3>
             <ul className="space-y-2 text-foreground/70 text-sm">
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/social-twitter" className="hover:text-foreground transition">
                   Twitter
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <Link to="/social-instagram" className="hover:text-foreground transition">
                   Instagram
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-foreground transition">
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition">
                   Facebook
                 </a>
               </li>

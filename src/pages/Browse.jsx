@@ -5,7 +5,7 @@ import Footer from "../components/Footer"
 import { Search } from "lucide-react"
 import { moviesAPI } from "../lib/api"
 
-export default function Browse({ isAuthenticated, onLogin }) {
+export default function Browse({ isAuthenticated, onLogin, userRole }) {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedGenres, setSelectedGenres] = useState(["All"])
@@ -28,6 +28,9 @@ export default function Browse({ isAuthenticated, onLogin }) {
     }
 
     fetchMovies()
+    
+    const refreshInterval = setInterval(fetchMovies, 5000)
+    return () => clearInterval(refreshInterval)
   }, [])
 
   const allMovies = useMemo(() => movies, [movies])
@@ -55,7 +58,7 @@ export default function Browse({ isAuthenticated, onLogin }) {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center">
-        <Navigation isAuthenticated={false} onAuthClick={(mode) => navigate("/")} />
+        <Navigation isAuthenticated={false} onAuthClick={(mode) => navigate("/")} userRole={userRole} />
         <div className="text-center">
           <h1 className="text-4xl font-bold text-foreground mb-4">Please sign in to continue</h1>
           <button onClick={onLogin} className="mt-8 px-8 py-3 bg-primary text-white rounded-lg hover:bg-primary/90">
@@ -69,7 +72,7 @@ export default function Browse({ isAuthenticated, onLogin }) {
   if (loading) {
     return (
       <main className="min-h-screen bg-background">
-        <Navigation isAuthenticated={isAuthenticated} />
+        <Navigation isAuthenticated={isAuthenticated} userRole={userRole} />
         <div className="pt-8 px-4 max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-foreground mb-8">Browse Movies</h1>
           <div className="text-center py-12">
@@ -83,7 +86,7 @@ export default function Browse({ isAuthenticated, onLogin }) {
   if (error) {
     return (
       <main className="min-h-screen bg-background">
-        <Navigation isAuthenticated={isAuthenticated} />
+        <Navigation isAuthenticated={isAuthenticated} userRole={userRole} />
         <div className="pt-8 px-4 max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold text-foreground mb-8">Browse Movies</h1>
           <div className="text-center py-12">
@@ -96,7 +99,7 @@ export default function Browse({ isAuthenticated, onLogin }) {
 
   return (
     <main className="min-h-screen bg-background">
-      <Navigation isAuthenticated={isAuthenticated} />
+      <Navigation isAuthenticated={isAuthenticated} userRole={userRole} />
 
   <div className="pt-8 px-4 max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold text-foreground mb-8">Browse Movies</h1>
@@ -161,12 +164,12 @@ export default function Browse({ isAuthenticated, onLogin }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-12">
           {filteredMovies.map((movie) => (
             <div
-              key={movie.id}
-              onClick={() => navigate(`/watch/${movie.id}`)}
+              key={movie._id}
+              onClick={() => navigate(`/watch/${movie._id}`)}
               className="group cursor-pointer relative overflow-hidden rounded-lg"
             >
               <img
-                src={movie.image || "/placeholder.svg"}
+                src={movie.poster || movie.image || "/placeholder.svg"}
                 alt={movie.title}
                 className="w-full h-64 object-cover group-hover:scale-110 transition duration-300"
                 onError={(e) => {
@@ -177,7 +180,7 @@ export default function Browse({ isAuthenticated, onLogin }) {
                 <h3 className="text-foreground font-semibold text-lg mb-1">{movie.title}</h3>
                 <div className="flex justify-between items-center text-sm text-muted">
                   <span>{movie.genre}</span>
-                  <span>⭐ {movie.rating}</span>
+                  <span>⭐ {(movie.rating || 0).toFixed(1)}</span>
                 </div>
               </div>
             </div>

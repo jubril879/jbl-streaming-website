@@ -4,7 +4,7 @@ import Navigation from "../components/Navigation"
 import Footer from "../components/Footer"
 import { Lock, Save, ArrowLeft, Trash2 } from "lucide-react"
 
-export default function Settings({ isAuthenticated, currentUser, onUpdateUser, onLogout, onDeleteAccount }) {
+export default function Settings({ isAuthenticated, currentUser, onUpdateUser, onLogout, onDeleteAccount, userRole }) {
   const navigate = useNavigate()
   const [form, setForm] = useState({
     name: "",
@@ -40,7 +40,6 @@ export default function Settings({ isAuthenticated, currentUser, onUpdateUser, o
   }, [isAuthenticated, currentUser, navigate])
 
   const handleSave = () => {
-    // basic validation
     if (form.newPassword && form.newPassword !== form.confirmPassword) {
       alert("Passwords do not match")
       return
@@ -71,7 +70,7 @@ export default function Settings({ isAuthenticated, currentUser, onUpdateUser, o
 
   return (
     <main className="min-h-screen bg-background flex flex-col">
-      <Navigation isAuthenticated={isAuthenticated} />
+      <Navigation isAuthenticated={isAuthenticated} userRole={userRole} />
 
       <div className="flex-1 pt-8 px-4 max-w-5xl mx-auto pb-16">
         <div className="mb-8 flex items-center gap-4">

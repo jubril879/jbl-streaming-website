@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Shield, Eye, EyeOff } from 'lucide-react';
+import { authAPI } from '../lib/api';
 
 export default function AdminLoginPage({ onLogin }) {
   const navigate = useNavigate();
@@ -14,50 +15,53 @@ export default function AdminLoginPage({ onLogin }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
-    // Simulate API call delay
-    setTimeout(() => {
+    try {
+      // First try backend API
+      let data;
       try {
+        data = await authAPI.login(formData.email, formData.password);
+      } catch (apiErr) {
+        console.warn('Backend API unavailable, falling back to localStorage');
+        // Fallback to localStorage if API fails
         const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const user = users.find(
-          (u) => u.email === formData.email && u.password === formData.password
-        );
-
-        if (!user) {
-          setError('Invalid email or password');
-          setIsLoading(false);
-          return;
+        const localUser = users.find(u => u.email === formData.email && u.password === formData.password);
+        
+        if (localUser) {
+          data = { user: localUser };
+        } else {
+          throw new Error('API unavailable and user not found locally');
         }
-
-        if (user.role !== 'admin') {
+      }
+      
+      if (data.user) {
+        if (data.user.role !== 'admin') {
           setError('Access denied: Admin privileges required');
           setIsLoading(false);
           return;
         }
 
         // Login successful
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        localStorage.setItem('authToken', 'admin-token-' + Date.now());
-
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        
         if (onLogin) {
-          onLogin(user);
+          onLogin(data.user);
         }
 
-        // Navigate to admin dashboard after a brief delay to allow state update
-        setTimeout(() => {
-          navigate('/admin-dashboard', { replace: true });
-        }, 200);
-      } catch (err) {
-        setError('An error occurred. Please try again.');
-        console.error('Login error:', err);
+        navigate('/admin');
+      } else {
+        setError(data.message || 'Invalid email or password');
       }
-
+    } catch (err) {
+      setError('Login failed. Please check your credentials or register an admin account.');
+      console.error('Login error:', err);
+    } finally {
       setIsLoading(false);
-    }, 600);
+    }
   };
 
   const goToRegisterAdmin = () => {
@@ -93,7 +97,7 @@ export default function AdminLoginPage({ onLogin }) {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full pl-20 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition"
+                  className="w-full pl-12 pr-4 py-2.5 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 transition"
                 />
               </div>
             </div>

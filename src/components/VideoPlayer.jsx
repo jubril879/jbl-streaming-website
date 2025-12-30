@@ -1,7 +1,7 @@
 import { useState, useRef } from "react"
 import { Play, Pause, Volume2, VolumeX, Maximize, Settings } from "lucide-react"
 
-export default function VideoPlayer({ movieId, title, poster }) {
+export default function VideoPlayer({ movieId, title, poster, videoUrl }) {
   const videoRef = useRef(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
@@ -74,7 +74,7 @@ export default function VideoPlayer({ movieId, title, poster }) {
     <div className="relative w-full bg-black rounded-lg overflow-hidden group">
       <video
         ref={videoRef}
-        src="https://sample-videos.com/zip/10/mp4/SampleVideo_640x360_1mb.mp4"
+        src={videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"}
         className="w-full h-80 object-cover"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}

@@ -5,10 +5,21 @@ import Browse from "./pages/Browse"
 import Watch from "./pages/Watch"
 import Profile from "./pages/Profile"
 import Admin from "./pages/Admin"
-import AdminDashboard from "../components/admin-dashboard"
+import Trending from "./pages/Trending"
 import Settings from "./pages/Settings"
 import RegisterAdmin from "./components/RegisterAdmin"
 import AdminLoginPage from "./pages/AdminLoginPage"
+import About from "./pages/About"
+import Careers from "./pages/Careers"
+import Press from "./pages/Press"
+import HelpCenter from "./pages/HelpCenter"
+import Contact from "./pages/Contact"
+import FAQ from "./pages/FAQ"
+import Privacy from "./pages/Privacy"
+import Terms from "./pages/Terms"
+import Cookies from "./pages/Cookies"
+import SocialTwitter from "./pages/SocialTwitter"
+import SocialInstagram from "./pages/SocialInstagram"
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -17,7 +28,6 @@ function App() {
 
   useEffect(() => {
     try {
-      // Check if user is logged in (token exists and currentUser is stored)
       const user = localStorage.getItem("currentUser")
       const token = localStorage.getItem("authToken")
       
@@ -36,7 +46,6 @@ function App() {
     setCurrentUser(userData)
     setIsAuthenticated(true)
     setUserRole(userData.role || "user")
-    // currentUser and authToken are already stored by the backend API
   }
 
   const handleLogout = () => {
@@ -56,7 +65,6 @@ function App() {
 
   const handleDeleteAccount = () => {
     if (!currentUser) return
-    // Logout will be handled by Settings.jsx calling backend
     handleLogout()
   }
 
@@ -65,19 +73,30 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Home isAuthenticated={isAuthenticated} onLogin={handleLogin} onLogout={handleLogout} />}
+          element={<Home isAuthenticated={isAuthenticated} onLogin={handleLogin} onLogout={handleLogout} userRole={userRole} />}
         />
-        <Route path="/browse" element={<Browse isAuthenticated={isAuthenticated} onLogin={handleLogin} />} />
-        <Route path="/watch/:id" element={<Watch isAuthenticated={isAuthenticated} currentUser={currentUser} />} />
+        <Route path="/browse" element={<Browse isAuthenticated={isAuthenticated} onLogin={handleLogin} userRole={userRole} />} />
+        <Route path="/trending" element={<Trending isAuthenticated={isAuthenticated} onLogin={handleLogin} userRole={userRole} />} />
+        <Route path="/watch/:id" element={<Watch isAuthenticated={isAuthenticated} currentUser={currentUser} userRole={userRole} />} />
         <Route
           path="/profile"
-          element={<Profile isAuthenticated={isAuthenticated} currentUser={currentUser} onLogout={handleLogout} />}
+          element={<Profile isAuthenticated={isAuthenticated} currentUser={currentUser} onLogout={handleLogout} userRole={userRole} />}
         />
-        <Route path="/settings" element={<Settings isAuthenticated={isAuthenticated} currentUser={currentUser} onUpdateUser={handleUpdateUser} onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} />} />
+        <Route path="/settings" element={<Settings isAuthenticated={isAuthenticated} currentUser={currentUser} onUpdateUser={handleUpdateUser} onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} userRole={userRole} />} />
         <Route path="/register-admin" element={<RegisterAdmin />} />
         <Route path="/admin-login" element={<AdminLoginPage onLogin={handleLogin} />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/admin" element={<Admin isAuthenticated={isAuthenticated} userRole={userRole} />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/careers" element={<Careers />} />
+        <Route path="/press" element={<Press />} />
+        <Route path="/help-center" element={<HelpCenter />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/cookies" element={<Cookies />} />
+        <Route path="/social-twitter" element={<SocialTwitter />} />
+        <Route path="/social-instagram" element={<SocialInstagram />} />
       </Routes>
     </Router>
   )

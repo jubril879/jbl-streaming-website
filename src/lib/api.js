@@ -26,6 +26,7 @@ export const authAPI = {
     if (data.token) {
       localStorage.setItem("authToken", data.token);
     }
+    // Ensure we return data.user if it exists, as some components expect it directly in the response
     return data;
   },
 
@@ -37,14 +38,20 @@ export const authAPI = {
 export const moviesAPI = {
   getAll: async () => {
     try {
-      // Try to fetch from API
       const response = await fetch(`${API_URL}/movies`);
       const data = await response.json();
 
-      // The API returns {movies: [...], pagination: {...}}
+      if (!response.ok) {
+        console.error("Failed to fetch movies:", data);
+        return [];
+      }
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+
       return data.movies || [];
     } catch (err) {
-      // If API fails, return empty array
       console.error("Failed to fetch from API", err);
       return [];
     }
@@ -64,7 +71,13 @@ export const moviesAPI = {
       },
       body: JSON.stringify(movieData),
     });
-    return await response.json();
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create movie");
+    }
+    
+    return data.movie || data;
   },
 
   update: async (id, movieData) => {
@@ -76,7 +89,13 @@ export const moviesAPI = {
       },
       body: JSON.stringify(movieData),
     });
-    return await response.json();
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update movie");
+    }
+    
+    return data.movie || data;
   },
 
   delete: async (id) => {
@@ -86,7 +105,13 @@ export const moviesAPI = {
         Authorization: `Bearer ${getToken()}`,
       },
     });
-    return await response.json();
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to delete movie");
+    }
+    
+    return data;
   },
 };
 

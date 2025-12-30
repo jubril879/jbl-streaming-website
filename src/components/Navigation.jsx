@@ -26,11 +26,11 @@ export default function Navigation({ isAuthenticated, onAuthClick, onLogout, use
             <Link to="/browse" className="text-sm text-foreground/70 hover:text-foreground transition">
               Browse
             </Link>
-            <a href="#trending" className="text-sm text-foreground/70 hover:text-foreground transition">
+            <Link to="/trending" className="text-sm text-foreground/70 hover:text-foreground transition">
               Trending
-            </a>
+            </Link>
             {isAuthenticated && userRole === "admin" && (
-              <Link to="/admin" className="text-sm text-foreground/70 hover:text-foreground transition">
+              <Link to="/admin" className="text-sm text-primary font-bold hover:text-primary/80 transition">
                 Admin
               </Link>
             )}
@@ -81,11 +81,11 @@ export default function Navigation({ isAuthenticated, onAuthClick, onLogout, use
             <Link to="/browse" className="block px-4 py-2 text-foreground/70 hover:text-foreground">
               Browse
             </Link>
-            <a href="#trending" className="block px-4 py-2 text-foreground/70 hover:text-foreground">
+            <Link to="/trending" className="block px-4 py-2 text-foreground/70 hover:text-foreground">
               Trending
-            </a>
-            {isAuthenticated && (
-              <Link to="/admin" className="block px-4 py-2 text-foreground/70 hover:text-foreground">
+            </Link>
+            {isAuthenticated && userRole === "admin" && (
+              <Link to="/admin" className="block px-4 py-2 text-primary font-bold hover:text-primary/80">
                 Admin
               </Link>
             )}

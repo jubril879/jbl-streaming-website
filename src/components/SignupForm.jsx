@@ -31,15 +31,6 @@ export default function SignupForm({ onSuccess }) {
       if (result.user && result.token) {
         localStorage.setItem("currentUser", JSON.stringify(result.user))
         onSuccess(result.user)
-
-        try {
-          const { sendWelcomeEmail } = await import("../lib/email")
-          await sendWelcomeEmail(result.user)
-          console.log("Welcome email sent")
-        } catch (emailErr) {
-          console.warn("Failed to send welcome email:", emailErr)
-        }
-
         setError("")
       } else {
         setError(result.message || "Failed to create account")
@@ -64,74 +55,82 @@ export default function SignupForm({ onSuccess }) {
 
       {error && <div className="p-3 bg-red-500/20 border border-red-500 text-red-300 rounded-lg text-sm font-medium animate-pulse">{error}</div>}
 
-      <div className="relative group">
+      <div className="group">
         <label className="block text-sm font-semibold text-foreground mb-2">Full Name</label>
-        <User className="absolute left-2 top-3/4 transform -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
-        <input
-          type="text"
-          name="name"
-          placeholder="Enter your full name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="w-full pl-20 pr-4 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
-        />
+        <div className="relative">
+          <User className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
+          <input
+            type="text"
+            name="name"
+            placeholder="Enter your full name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="w-full pl-12 pr-4 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
+          />
+        </div>
       </div>
 
-      <div className="relative group">
+      <div className="group">
         <label className="block text-sm font-semibold text-foreground mb-2">Email Address</label>
-        <Mail className="absolute left-2 top-3/4 transform -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full pl-20 pr-4 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
-        />
+        <div className="relative">
+          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
+          <input
+            type="email"
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full pl-12 pr-4 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
+          />
+        </div>
       </div>
 
-      <div className="relative group">
+      <div className="group">
         <label className="block text-sm font-semibold text-foreground mb-2">Password</label>
-        <Lock className="absolute left-2 top-3/4 transform -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
-        <button
-          type="button"
-          onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-4 top-3/4 transform -translate-y-1/2 text-foreground/50 hover:text-foreground transition"
-        >
-          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-        </button>
-        <input
-          type={showPassword ? "text" : "password"}
-          name="password"
-          placeholder="Create a strong password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full pl-20 pr-20 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
-        />
+        <div className="relative">
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground transition z-10"
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            placeholder="Create a strong password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="w-full pl-12 pr-12 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
+          />
+        </div>
       </div>
 
-      <div className="relative group">
+      <div className="group">
         <label className="block text-sm font-semibold text-foreground mb-2">Confirm Password</label>
-        <Lock className="absolute left-2 top-3/4 transform -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
-        <button
-          type="button"
-          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-          className="absolute right-4 top-3/4 transform -translate-y-1/2 text-foreground/50 hover:text-foreground transition"
-        >
-          {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-        </button>
-        <input
-          type={showConfirmPassword ? "text" : "password"}
-          name="confirmPassword"
-          placeholder="Confirm your password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          className="w-full pl-20 pr-20 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
-        />
+        <div className="relative">
+          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/60 group-focus-within:text-primary transition" size={20} />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-foreground/50 hover:text-foreground transition z-10"
+          >
+            {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+          <input
+            type={showConfirmPassword ? "text" : "password"}
+            name="confirmPassword"
+            placeholder="Confirm your password"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            className="w-full pl-12 pr-12 py-3.5 bg-background/50 hover:bg-background/70 text-foreground rounded-xl border border-border/40 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition placeholder:text-foreground/40"
+          />
+        </div>
       </div>
 
       <button

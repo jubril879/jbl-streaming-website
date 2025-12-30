@@ -60,53 +60,59 @@ export default function AdminLogin({ onLogin }) {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="relative group">
+            <div className="group">
               <label className="block text-sm font-semibold text-gray-300 mb-2">Email Address</label>
-              <Mail className="absolute left-4 top-11 text-red-400 group-focus-within:text-red-300 transition" size={20} />
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter admin email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full pl-12 pr-4 py-3.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl border border-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder:text-gray-400"
-              />
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-red-400 group-focus-within:text-red-300 transition" size={20} />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter admin email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl border border-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder:text-gray-400"
+                />
+              </div>
             </div>
 
-            <div className="relative group">
+            <div className="group">
               <label className="block text-sm font-semibold text-gray-300 mb-2">Password</label>
-              <Lock className="absolute left-4 top-11 text-red-400 group-focus-within:text-red-300 transition" size={20} />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-11 text-gray-400 hover:text-gray-300 transition"
-              >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-              </button>
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="Enter admin password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full pl-12 pr-12 py-3.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl border border-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder:text-gray-400"
-              />
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-red-400 group-focus-within:text-red-300 transition" size={20} />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300 transition"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Enter admin password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-12 py-3.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl border border-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder:text-gray-400"
+                />
+              </div>
             </div>
 
-            <div className="relative group">
+            <div className="group">
               <label className="block text-sm font-semibold text-gray-300 mb-2">Admin Code</label>
-              <Shield className="absolute left-4 top-11 text-red-400 group-focus-within:text-red-300 transition" size={20} />
-              <input
-                type="text"
-                name="adminCode"
-                placeholder="Enter admin code"
-                value={formData.adminCode}
-                onChange={handleChange}
-                required
-                className="w-full pl-12 pr-4 py-3.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl border border-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder:text-gray-400"
-              />
+              <div className="relative">
+                <Shield className="absolute left-4 top-1/2 -translate-y-1/2 text-red-400 group-focus-within:text-red-300 transition" size={20} />
+                <input
+                  type="text"
+                  name="adminCode"
+                  placeholder="Enter admin code"
+                  value={formData.adminCode}
+                  onChange={handleChange}
+                  required
+                  className="w-full pl-12 pr-4 py-3.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl border border-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 transition placeholder:text-gray-400"
+                />
+              </div>
             </div>
 
             <button

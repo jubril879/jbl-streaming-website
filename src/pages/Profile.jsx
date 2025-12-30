@@ -5,7 +5,7 @@ import { LogOut, Edit2, Star, Clock, Heart } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { userAPI } from "../lib/api"
 
-export default function Profile({ isAuthenticated, currentUser, onLogout }) {
+export default function Profile({ isAuthenticated, currentUser, onLogout, userRole }) {
   const navigate = useNavigate()
   const [watchHistory, setWatchHistory] = useState([])
   const [editMode, setEditMode] = useState(false)
@@ -51,9 +51,14 @@ export default function Profile({ isAuthenticated, currentUser, onLogout }) {
     fetchData()
   }, [isAuthenticated, currentUser, navigate])
 
+  const handleLogout = () => {
+    onLogout?.()
+    navigate("/")
+  }
+
   return (
     <main className="min-h-screen bg-background flex flex-col">
-      <Navigation isAuthenticated={isAuthenticated} onLogout={onLogout} />
+      <Navigation isAuthenticated={isAuthenticated} onLogout={onLogout} userRole={userRole} />
 
   <div className="flex-1 pt-8 px-4 max-w-6xl mx-auto pb-16">
         <div className="mb-10 flex items-center justify-between gap-4">
@@ -213,22 +218,42 @@ export default function Profile({ isAuthenticated, currentUser, onLogout }) {
             </div>
 
             <div className="bg-secondary rounded-2xl p-6 shadow border border-border">
-              <h2 className="text-xl font-semibold text-foreground mb-4">Recent Activity</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4">Watch History</h2>
               {watchHistory.length ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {watchHistory.slice(0,9).map((item, idx) => (
-                    <div key={idx} className="bg-background/40 rounded-lg overflow-hidden">
-                      <div className="h-40 bg-gradient-to-br from-black/30 to-black/10 flex items-end p-3">
-                        <div>
-                          <div className="text-sm text-foreground/60">{new Date(item.watchedAt).toLocaleDateString()}</div>
-                          <div className="text-lg font-semibold text-foreground">{item.title}</div>
+                  {watchHistory.slice(0, 9).map((item, idx) => (
+                    <div 
+                      key={idx} 
+                      className="group bg-background/40 rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary transition-all"
+                      onClick={() => navigate(`/watch/${item.movieId}`)}
+                    >
+                      <div className="relative h-40 overflow-hidden">
+                        <img 
+                          src={item.movieImage || "https://via.placeholder.com/200x300?text=Movie"} 
+                          alt={item.movieTitle}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/200x300?text=Movie"
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-3">
+                          <div className="text-xs text-white/60 flex items-center gap-1">
+                            <Clock size={12} />
+                            {new Date(item.watchedAt).toLocaleDateString()}
+                          </div>
                         </div>
+                      </div>
+                      <div className="p-3">
+                        <div className="text-sm font-semibold text-foreground line-clamp-1">{item.movieTitle}</div>
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-foreground/60">No recent activity — start watching something!</div>
+                <div className="text-foreground/60 flex flex-col items-center py-8 text-center">
+                  <Clock className="mb-2 opacity-20" size={48} />
+                  <p>No watch history yet — start watching something!</p>
+                </div>
               )}
             </div>
 
