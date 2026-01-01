@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Shield, Eye, EyeOff } from 'lucide-react';
 import { authAPI } from '../lib/api';
-
+const API_URL = 'https://jbl-streaming-website3-1.onrender.com'
 export default function AdminLoginPage({ onLogin }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
