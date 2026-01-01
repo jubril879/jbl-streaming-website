@@ -44,7 +44,7 @@ export default function Admin({ isAuthenticated, userRole }) {
   }, [])
 
   useEffect(() => {
-    // Check localStorage to get the most current user data
+    
     const currentUserStr = localStorage.getItem("currentUser")
     const role = currentUserStr ? JSON.parse(currentUserStr).role : userRole
     
@@ -94,16 +94,19 @@ export default function Admin({ isAuthenticated, userRole }) {
       const newMovie = {
         title: formData.title.trim(),
         genre: formData.genre,
-        rating: Number.parseFloat(formData.rating),
+        rating: Number(formData.rating),
         year: Number(formData.year),
         description: formData.description.trim(),
-        poster: formData.poster || "https://via.placeholder.com/200x300?text=No+Image",
-        videoUrl: formData.videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+        poster: formData.poster.trim(),
+        videoUrl: formData.videoUrl.trim(),
         isFeatured: formData.isFeatured
       }
 
+      console.log("Sending movie to API:", newMovie);
       const createdMovie = await moviesAPI.create(newMovie)
-      setMovies([createdMovie, ...movies])
+      console.log("Successfully created movie:", createdMovie);
+      
+      setMovies((prev) => [createdMovie, ...prev])
       setFormData({ 
         title: "", 
         genre: "", 
@@ -117,8 +120,18 @@ export default function Admin({ isAuthenticated, userRole }) {
       setSuccess("✅ Movie posted successfully! It's now visible on the main website.")
       setTimeout(() => setSuccess(""), 5000)
     } catch (err) {
-      setError(err.message || "Failed to upload movie")
-      console.error(err)
+      console.error("Submit Error:", err)
+      let errorMessage = err.message || "Failed to upload movie";
+      
+      if (errorMessage.includes("401") || errorMessage.includes("token") || errorMessage.toLowerCase().includes("unauthorized")) {
+        setError("Authentication session expired or invalid. Please log out and log in again as admin.");
+      } else if (errorMessage.toLowerCase().includes("failed to fetch") || errorMessage.toLowerCase().includes("networkerror")) {
+        setError("Network error: Backend server is unreachable (http://localhost:5000). Please ensure the backend is running.");
+      } else if (errorMessage.toLowerCase().includes("403")) {
+        setError("Access Denied: You do not have admin privileges in the backend.");
+      } else {
+        setError(`Error: ${errorMessage}`);
+      }
     } finally {
       setIsLoading(false)
     }
@@ -267,7 +280,7 @@ export default function Admin({ isAuthenticated, userRole }) {
               <h2 className="text-xl font-semibold text-foreground mb-4">Posted Movies ({movies.length})</h2>
 
               {movies.length ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[700px] overflow-y-auto pr-2 custom-scrollbar">
                   {movies.map((movie) => (
                     <div key={movie._id} className="group bg-background/20 rounded-lg overflow-hidden relative border border-border/50 hover:border-primary transition">
                       <div className="relative aspect-[2/3] bg-gradient-to-br from-background to-background/50 overflow-hidden">

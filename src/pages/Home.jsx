@@ -41,7 +41,8 @@ export default function Home({ isAuthenticated, onLogin, onLogout, userRole }) {
 
     loadMovies()
     
-    const refreshInterval = setInterval(loadMovies, 5000)
+    // Auto-refresh movies every 3 seconds to collect latest additions from MongoDB
+    const refreshInterval = setInterval(loadMovies, 3000)
     return () => clearInterval(refreshInterval)
   }, [])
 
@@ -59,11 +60,11 @@ export default function Home({ isAuthenticated, onLogin, onLogout, userRole }) {
   }
 
   const getNewReleases = () => {
-    return allMovies.slice(0, 6).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    return allMovies.slice(0, 12).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   }
 
   const getTopRated = () => {
-    return [...allMovies].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 6)
+    return [...allMovies].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 12)
   }
 
   const MovieCard = ({ movie, onClick }) => (
@@ -167,7 +168,7 @@ export default function Home({ isAuthenticated, onLogin, onLogout, userRole }) {
                       <span className="text-foreground/60 text-sm">{movies.length} titles</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-                      {movies.slice(0, 12).map((movie) => (
+                      {movies.slice(0, 18).map((movie) => (
                         <MovieCard
                           key={movie._id}
                           movie={movie}
@@ -175,7 +176,7 @@ export default function Home({ isAuthenticated, onLogin, onLogout, userRole }) {
                         />
                       ))}
                     </div>
-                    {movies.length > 12 && (
+                    {movies.length > 18 && (
                       <button
                         onClick={() => navigate("/browse")}
                         className="mt-6 px-6 py-2 rounded-lg border border-primary text-primary hover:bg-primary/10 transition font-semibold"
@@ -189,23 +190,35 @@ export default function Home({ isAuthenticated, onLogin, onLogout, userRole }) {
           </section>
         )}
 
-        {/* Empty State */}
-        {allMovies.length === 0 && !loadingMovies && (
-          <section className="py-20 px-4 text-center">
-            <div className="max-w-md mx-auto">
-              <h3 className="text-2xl font-bold text-foreground mb-4">No Movies Yet</h3>
-              <p className="text-foreground/70 mb-6">Content is coming soon! Check back later for amazing movies.</p>
-              {!isAuthenticated && (
-                <button
-                  onClick={() => handleAuthClick("signup")}
-                  className="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition"
-                >
-                  Get Started
-                </button>
-              )}
-            </div>
-          </section>
-        )}
+        {/* Movies List Section */}
+        <section className="py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl font-bold text-foreground mb-8">Featured Movies</h2>
+            {allMovies.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+                {allMovies.map((movie) => (
+                  <MovieCard
+                    key={movie._id}
+                    movie={movie}
+                    onClick={() => navigate(`/watch/${movie._id}`)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-20">
+                <p className="text-foreground/70 mb-6">Fetching the latest movies for you...</p>
+                {!isAuthenticated && (
+                  <button
+                    onClick={() => handleAuthClick("signup")}
+                    className="px-6 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-primary/90 transition"
+                  >
+                    Get Started
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
 
         {/* Loading State */}
         {loadingMovies && (

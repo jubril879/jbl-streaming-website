@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { authAPI } from "../lib/api"
 
@@ -95,11 +96,19 @@ export default function LoginForm({ onSuccess }) {
         {isLoading ? "Signing in..." : "Sign In"}
       </button>
 
-      <div className="pt-4 border-t border-border/40">
-        <p className="text-center text-foreground/60 text-xs">Demo Accounts:</p>
-        <div className="text-center text-foreground/50 text-xs mt-2 space-y-1">
-          <p><span className="text-primary font-semibold">User:</span> <span className="text-primary font-semibold">demo@test.com</span> / <span className="text-primary font-semibold">password123</span></p>
-          <p><span className="text-yellow-400 font-semibold">Admin:</span> <span className="text-yellow-400 font-semibold">admin@cinemahub.com</span> / <span className="text-yellow-400 font-semibold">admin123</span></p>
+      <div className="pt-4 border-t border-border/40 space-y-4">
+        <div className="text-center">
+          <p className="text-foreground/70 text-sm">
+            Login as an Admin <Link to="/admin-login" className="text-red-600 hover:text-red-700 hover:underline font-semibold">click here</Link>
+          </p>
+        </div>
+        
+        <div className="pt-2">
+          <p className="text-center text-foreground/60 text-xs">Demo Accounts:</p>
+          <div className="text-center text-foreground/50 text-xs mt-2 space-y-1">
+            <p><span className="text-primary font-semibold">User:</span> <span className="text-primary font-semibold">demo@test.com</span> / <span className="text-primary font-semibold">password123</span></p>
+            <p><span className="text-yellow-400 font-semibold">Admin:</span> <span className="text-yellow-400 font-semibold">admin@cinemahub.com</span> / <span className="text-yellow-400 font-semibold">admin123</span></p>
+          </div>
         </div>
       </div>
     </form>

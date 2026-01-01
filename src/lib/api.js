@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "https://jbl-streaming-website.vercel.app/api";
 
 const getToken = () => localStorage.getItem("authToken");
 
@@ -26,7 +26,6 @@ export const authAPI = {
     if (data.token) {
       localStorage.setItem("authToken", data.token);
     }
-    // Ensure we return data.user if it exists, as some components expect it directly in the response
     return data;
   },
 
@@ -38,21 +37,30 @@ export const authAPI = {
 export const moviesAPI = {
   getAll: async () => {
     try {
-      const response = await fetch(`${API_URL}/movies`);
-      const data = await response.json();
-
+      const url = `${API_URL}/movies?t=${Date.now()}`;
+      console.log(`Fetching movies from: ${url}`);
+      const response = await fetch(url);
+      
       if (!response.ok) {
-        console.error("Failed to fetch movies:", data);
+        const errorText = await response.text();
+        console.error(`API Error (${response.status}):`, errorText);
         return [];
       }
+
+      const data = await response.json();
+      console.log("Fetched movies data:", data);
 
       if (Array.isArray(data)) {
         return data;
       }
 
-      return data.movies || [];
+      if (data.movies && Array.isArray(data.movies)) {
+        return data.movies;
+      }
+
+      return [];
     } catch (err) {
-      console.error("Failed to fetch from API", err);
+      console.error("Failed to fetch from API. Is the backend running at http://localhost:5000?", err);
       return [];
     }
   },

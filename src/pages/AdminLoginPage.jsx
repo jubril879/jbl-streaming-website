@@ -21,22 +21,7 @@ export default function AdminLoginPage({ onLogin }) {
     setIsLoading(true);
 
     try {
-      // First try backend API
-      let data;
-      try {
-        data = await authAPI.login(formData.email, formData.password);
-      } catch (apiErr) {
-        console.warn('Backend API unavailable, falling back to localStorage');
-        // Fallback to localStorage if API fails
-        const users = JSON.parse(localStorage.getItem('users') || '[]');
-        const localUser = users.find(u => u.email === formData.email && u.password === formData.password);
-        
-        if (localUser) {
-          data = { user: localUser };
-        } else {
-          throw new Error('API unavailable and user not found locally');
-        }
-      }
+      const data = await authAPI.login(formData.email, formData.password);
       
       if (data.user) {
         if (data.user.role !== 'admin') {
@@ -45,7 +30,7 @@ export default function AdminLoginPage({ onLogin }) {
           return;
         }
 
-        // Login successful
+        // Login successful - tokens are handled in authAPI.login
         localStorage.setItem('currentUser', JSON.stringify(data.user));
         
         if (onLogin) {
@@ -57,8 +42,20 @@ export default function AdminLoginPage({ onLogin }) {
         setError(data.message || 'Invalid email or password');
       }
     } catch (err) {
-      setError('Login failed. Please check your credentials or register an admin account.');
-      console.error('Login error:', err);
+      console.error('API Login error:', err);
+      
+      // Fallback only if absolutely necessary and user exists locally
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const localUser = users.find(u => u.email === formData.email && u.password === formData.password);
+      
+      if (localUser && localUser.role === 'admin') {
+        setError('Backend unavailable. Logged in via local fallback (Limited functionality: cannot add movies).');
+        localStorage.setItem('currentUser', JSON.stringify(localUser));
+        if (onLogin) onLogin(localUser);
+        navigate('/admin');
+      } else {
+        setError(err.message || 'Login failed. Please check your credentials or backend connection.');
+      }
     } finally {
       setIsLoading(false);
     }

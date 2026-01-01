@@ -29,7 +29,8 @@ export default function Browse({ isAuthenticated, onLogin, userRole }) {
 
     fetchMovies()
     
-    const refreshInterval = setInterval(fetchMovies, 5000)
+    // Auto-refresh every 3 seconds to stay synced with MongoDB
+    const refreshInterval = setInterval(fetchMovies, 3000)
     return () => clearInterval(refreshInterval)
   }, [])
 
@@ -112,6 +113,8 @@ export default function Browse({ isAuthenticated, onLogin, userRole }) {
             className="rounded-lg"
           >
             <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" type="video/mp4" />
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" type="video/mp4" />
+                <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
         </div>

@@ -1,38 +1,25 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authAPI } from '../lib/api';
 
 export default function RegisterAdmin() {
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(''); // 'success' or 'error'
+  const [isLoading, setIsLoading] = useState(false);
 
   const adminCredentials = {
+    name: 'Admin',
     email: 'admin@cinemahub.com',
     password: 'admin123',
     adminCode: 'ADMIN123',
   };
 
-  const manualRegistrationCode = `const adminUser = {
-  name: "Admin",
-  email: "admin@cinemahub.com",
-  password: "admin123",
-  role: "admin",
-  createdAt: new Date().toISOString()
-};
-
-const users = JSON.parse(localStorage.getItem("users") || "[]");
-const adminExists = users.some(u => u.email === "admin@cinemahub.com");
-
-if (!adminExists) {
-  users.push(adminUser);
-  localStorage.setItem("users", JSON.stringify(users));
-  console.log("Admin account registered:", adminUser);
-} else {
-  console.log("Admin account already exists");
-}`;
-
-  const registerAdmin = () => {
+  const registerAdmin = async () => {
+    setIsLoading(true);
+    setMessage('Registering admin...');
     try {
+      // 1. Always register in localStorage for fallback
       const adminUser = {
         name: 'Admin',
         email: 'admin@cinemahub.com',
@@ -42,21 +29,36 @@ if (!adminExists) {
       };
 
       const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const adminExists = users.some((u) => u.email === 'admin@cinemahub.com');
-
-      if (!adminExists) {
+      if (!users.some((u) => u.email === adminUser.email)) {
         users.push(adminUser);
         localStorage.setItem('users', JSON.stringify(users));
+      }
+
+      // 2. Try to register on the real backend
+      try {
+        const response = await authAPI.register(
+          adminCredentials.name,
+          adminCredentials.email,
+          adminCredentials.password
+        );
+        
+        if (response.token) {
+          setMessageType('success');
+          setMessage('✅ Admin registered on backend and locally! You can now log in.');
+        } else {
+          setMessageType('success');
+          setMessage(`ℹ️ Local registration success. Backend note: ${response.message || 'Already exists or error'}`);
+        }
+      } catch (apiError) {
+        console.error('Backend registration failed:', apiError);
         setMessageType('success');
-        setMessage('✅ Admin account registered successfully!');
-        console.log('Admin account registered:', adminUser);
-      } else {
-        setMessageType('success');
-        setMessage('ℹ️ Admin account already exists.');
+        setMessage('✅ Registered locally. (Backend currently unavailable - ensure database is connected for full features)');
       }
     } catch (error) {
       setMessageType('error');
       setMessage(`❌ Error registering admin: ${error.message}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,9 +115,10 @@ if (!adminExists) {
         <div className="space-y-3 mb-8">
           <button
             onClick={registerAdmin}
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition"
+            disabled={isLoading}
+            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition disabled:opacity-50"
           >
-            Register Admin Account
+            {isLoading ? 'Registering...' : 'Register Admin Account'}
           </button>
           <button
             onClick={checkAdmin}
