@@ -22,40 +22,23 @@ export default function AdminLoginPage({ onLogin }) {
 
     try {
       const data = await authAPI.login(formData.email, formData.password);
-      
       if (data.user) {
         if (data.user.role !== 'admin') {
           setError('Access denied: Admin privileges required');
           setIsLoading(false);
           return;
         }
-
-        // Login successful - tokens are handled in authAPI.login
-        localStorage.setItem('currentUser', JSON.stringify(data.user));
-        
+        // Pass the full login response (user and token) to onLogin
         if (onLogin) {
-          onLogin(data.user);
+          onLogin(data);
         }
-
         navigate('/admin');
       } else {
         setError(data.message || 'Invalid email or password');
       }
     } catch (err) {
       console.error('API Login error:', err);
-      
-      // Fallback only if absolutely necessary and user exists locally
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const localUser = users.find(u => u.email === formData.email && u.password === formData.password);
-      
-      if (localUser && localUser.role === 'admin') {
-        setError('Backend unavailable. Logged in via local fallback (Limited functionality: cannot add movies).');
-        localStorage.setItem('currentUser', JSON.stringify(localUser));
-        if (onLogin) onLogin(localUser);
-        navigate('/admin');
-      } else {
-        setError(err.message || 'Login failed. Please check your credentials or backend connection.');
-      }
+      setError(err.message || 'Login failed. Please check your credentials or backend connection.');
     } finally {
       setIsLoading(false);
     }

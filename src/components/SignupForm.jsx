@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Mail, Lock, User, Eye, EyeOff, CheckCircle } from "lucide-react"
 import { authAPI } from "../lib/api"
+import WelcomeModal from "./WelcomeModal"
 
 export default function SignupForm({ onSuccess }) {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", confirmPassword: "" })
@@ -8,6 +9,8 @@ export default function SignupForm({ onSuccess }) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [welcomeUserName, setWelcomeUserName] = useState("")
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -29,9 +32,12 @@ export default function SignupForm({ onSuccess }) {
       const result = await authAPI.register(formData.name, formData.email, formData.password)
 
       if (result.user && result.token) {
-        localStorage.setItem("currentUser", JSON.stringify(result.user))
-        onSuccess(result.user)
-        setError("")
+        setWelcomeUserName(result.user.name)
+        setShowWelcomeModal(true)
+        setTimeout(() => {
+          onSuccess(result.user)
+          setError("")
+        }, 2000)
       } else {
         setError(result.message || "Failed to create account")
       }
@@ -44,7 +50,14 @@ export default function SignupForm({ onSuccess }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <>
+      <WelcomeModal 
+        isOpen={showWelcomeModal} 
+        onClose={() => setShowWelcomeModal(false)}
+        userName={welcomeUserName}
+        type="signup"
+      />
+      <form onSubmit={handleSubmit} className="space-y-5">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
           <span className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-400 text-xs font-semibold text-white shadow-md">CinemaHub</span>
@@ -147,5 +160,6 @@ export default function SignupForm({ onSuccess }) {
         </p>
       </div>
     </form>
+    </>
   )
 }

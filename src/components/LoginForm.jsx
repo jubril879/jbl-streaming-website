@@ -2,12 +2,15 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { authAPI } from "../lib/api"
+import WelcomeModal from "./WelcomeModal"
 
 export default function LoginForm({ onSuccess }) {
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [welcomeUserName, setWelcomeUserName] = useState("")
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -20,12 +23,13 @@ export default function LoginForm({ onSuccess }) {
     setError("")
     try {
       const result = await authAPI.login(formData.email, formData.password)
-      
       if (result.user && result.token) {
-        // API already stores token, now store user
-        localStorage.setItem("currentUser", JSON.stringify(result.user))
-        onSuccess(result.user)
-        setError("")
+        setWelcomeUserName(result.user.name)
+        setShowWelcomeModal(true)
+        setTimeout(() => {
+          onSuccess(result.user)
+          setError("")
+        }, 2000)
       } else {
         setError(result.message || "Login failed")
       }
@@ -38,7 +42,14 @@ export default function LoginForm({ onSuccess }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <>
+      <WelcomeModal 
+        isOpen={showWelcomeModal} 
+        onClose={() => setShowWelcomeModal(false)}
+        userName={welcomeUserName}
+        type="login"
+      />
+      <form onSubmit={handleSubmit} className="space-y-5">
       <div className="text-center mb-8">
         <div className="flex justify-center mb-4">
           <span className="inline-block px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500 via-pink-500 to-yellow-400 text-xs font-semibold text-white shadow-md">CinemaHub</span>
@@ -112,5 +123,6 @@ export default function LoginForm({ onSuccess }) {
         </div>
       </div>
     </form>
+    </>
   )
 }

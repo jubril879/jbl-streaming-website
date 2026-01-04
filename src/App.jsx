@@ -25,11 +25,13 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
   const [userRole, setUserRole] = useState("user")
+  const [authToken, setAuthToken] = useState(null)
 
   useEffect(() => {
     try {
-      const user = localStorage.getItem("currentUser")
-      const token = localStorage.getItem("authToken")
+      // Removed localStorage usage for user and token
+      const user = null
+      const token = null
       
       if (user && token) {
         const userData = JSON.parse(user)
@@ -43,24 +45,24 @@ function App() {
   }, [])
 
   const handleLogin = (userData) => {
-    setCurrentUser(userData)
+    setCurrentUser(userData.user || userData)
     setIsAuthenticated(true)
-    setUserRole(userData.role || "user")
+    setUserRole((userData.user || userData).role || "user")
+    if (userData.token) setAuthToken(userData.token)
   }
 
   const handleLogout = () => {
     setCurrentUser(null)
     setIsAuthenticated(false)
     setUserRole("user")
-    localStorage.removeItem("currentUser")
-    localStorage.removeItem("authToken")
+    setAuthToken(null)
   }
 
   const handleUpdateUser = (updates) => {
     if (!currentUser) return
     const updated = { ...currentUser, ...updates }
     setCurrentUser(updated)
-    localStorage.setItem("currentUser", JSON.stringify(updated))
+    // Removed localStorage set for currentUser
   }
 
   const handleDeleteAccount = () => {
@@ -85,7 +87,7 @@ function App() {
         <Route path="/settings" element={<Settings isAuthenticated={isAuthenticated} currentUser={currentUser} onUpdateUser={handleUpdateUser} onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} userRole={userRole} />} />
         <Route path="/register-admin" element={<RegisterAdmin />} />
         <Route path="/admin-login" element={<AdminLoginPage onLogin={handleLogin} />} />
-        <Route path="/admin" element={<Admin isAuthenticated={isAuthenticated} userRole={userRole} />} />
+        <Route path="/admin" element={<Admin isAuthenticated={isAuthenticated} userRole={userRole} authToken={authToken} />} />
         <Route path="/about" element={<About />} />
         <Route path="/careers" element={<Careers />} />
         <Route path="/press" element={<Press />} />

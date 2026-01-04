@@ -19,73 +19,39 @@ export default function RegisterAdmin() {
     setIsLoading(true);
     setMessage('Registering admin...');
     try {
-      // 1. Always register in localStorage for fallback
-      const adminUser = {
-        name: 'Admin',
-        email: 'admin@cinemahub.com',
-        password: 'admin123',
-        role: 'admin',
-        createdAt: new Date().toISOString(),
-      };
-
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      if (!users.some((u) => u.email === adminUser.email)) {
-        users.push(adminUser);
-        localStorage.setItem('users', JSON.stringify(users));
-      }
-
-      // 2. Try to register on the real backend
-      try {
-        const response = await authAPI.register(
-          adminCredentials.name,
-          adminCredentials.email,
-          adminCredentials.password
-        );
-        
-        if (response.token) {
-          setMessageType('success');
-          setMessage('✅ Admin registered on backend and locally! You can now log in.');
-        } else {
-          setMessageType('success');
-          setMessage(`ℹ️ Local registration success. Backend note: ${response.message || 'Already exists or error'}`);
-        }
-      } catch (apiError) {
-        console.error('Backend registration failed:', apiError);
+      // Try to register on the real backend
+      const response = await authAPI.register(
+        adminCredentials.name,
+        adminCredentials.email,
+        adminCredentials.password
+      );
+      
+      if (response.token) {
         setMessageType('success');
-        setMessage('✅ Registered locally. (Backend currently unavailable - ensure database is connected for full features)');
+        setMessage('✅ Admin registered on backend successfully! You can now log in.');
+      } else {
+        setMessageType('error');
+        setMessage(`❌ Registration failed. Backend note: ${response.message || 'Already exists or error'}`);
       }
     } catch (error) {
+      console.error('Backend registration failed:', error);
       setMessageType('error');
-      setMessage(`❌ Error registering admin: ${error.message}`);
+      setMessage(`❌ Backend currently unavailable - ensure database is connected and backend is running. Error: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
   };
 
   const checkAdmin = () => {
-    try {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const adminExists = users.some((u) => u.email === 'admin@cinemahub.com');
-
-      if (adminExists) {
-        const admin = users.find((u) => u.email === 'admin@cinemahub.com');
-        setMessageType('success');
-        setMessage(`✅ Admin account found: ${JSON.stringify(admin, null, 2)}`);
-      } else {
-        setMessageType('error');
-        setMessage('❌ Admin account not found.');
-      }
-    } catch (error) {
-      setMessageType('error');
-      setMessage(`❌ Error checking admin: ${error.message}`);
-    }
+    setMessage('Please use the Admin Login page to verify access.');
+    setMessageType('success');
   };
 
   const clearStorage = () => {
-    if (window.confirm('Are you sure you want to clear all localStorage data? This will remove all users and data.')) {
-      localStorage.clear();
+    if (window.confirm('Are you sure you want to clear session data (Logout)?')) {
+      // Removed localStorage removal for authToken and currentUser
       setMessageType('success');
-      setMessage('🗑️ All data cleared. You can now register the admin account again.');
+      setMessage('🗑️ Session data cleared.');
     }
   };
 
@@ -94,7 +60,7 @@ export default function RegisterAdmin() {
       <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-4">Register Admin Account</h1>
         <p className="text-gray-600 mb-6">
-          This tool will register the admin account in your browser's localStorage so you can log in to the admin panel.
+          This tool will register the default admin account on your MongoDB database.
         </p>
 
         <div className="mb-8">

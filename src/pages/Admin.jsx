@@ -5,7 +5,7 @@ import { Upload, X } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { moviesAPI } from "../lib/api"
 
-export default function Admin({ isAuthenticated, userRole }) {
+export default function Admin({ isAuthenticated, userRole, authToken }) {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     title: "",
@@ -44,11 +44,8 @@ export default function Admin({ isAuthenticated, userRole }) {
   }, [])
 
   useEffect(() => {
-    
-    const currentUserStr = localStorage.getItem("currentUser")
-    const role = currentUserStr ? JSON.parse(currentUserStr).role : userRole
-    
-    if (!isAuthenticated || role !== "admin") {
+    // Removed localStorage usage for currentUser
+    if (!isAuthenticated || userRole !== "admin") {
       navigate("/admin-login")
     }
   }, [isAuthenticated, userRole, navigate])
@@ -71,11 +68,7 @@ export default function Admin({ isAuthenticated, userRole }) {
   }, [isAuthenticated, userRole])
 
   if (!isAuthenticated || userRole !== "admin") {
-    const currentUserStr = localStorage.getItem("currentUser")
-    const role = currentUserStr ? JSON.parse(currentUserStr).role : userRole
-    if (role !== "admin") {
-      return null
-    }
+    return null
   }
 
   const handleSubmit = async (e) => {
@@ -103,7 +96,7 @@ export default function Admin({ isAuthenticated, userRole }) {
       }
 
       console.log("Sending movie to API:", newMovie);
-      const createdMovie = await moviesAPI.create(newMovie)
+      const createdMovie = await moviesAPI.create(newMovie, authToken)
       console.log("Successfully created movie:", createdMovie);
       
       setMovies((prev) => [createdMovie, ...prev])
@@ -139,7 +132,7 @@ export default function Admin({ isAuthenticated, userRole }) {
 
   const handleDelete = async (id) => {
     try {
-      await moviesAPI.delete(id)
+      await moviesAPI.delete(id, authToken)
       setMovies(movies.filter((m) => m._id !== id))
     } catch (err) {
       setError(err.message || "Failed to delete movie")
