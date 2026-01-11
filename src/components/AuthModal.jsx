@@ -8,7 +8,7 @@ export default function AuthModal({ isOpen, mode, onClose, onSuccess }) {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
       <div className="relative w-full max-w-md my-8">
-        {/* Colorful animated gradient background */}
+     
         <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
           <div className="auth-gradient-bg" />
         </div>
