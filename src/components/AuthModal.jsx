@@ -14,11 +14,11 @@ export default function AuthModal({ isOpen, mode, onClose, onSuccess }) {
         </div>
 
         <div className="relative bg-gradient-to-br from-secondary/80 to-background/90 rounded-2xl shadow-2xl border border-primary/10 overflow-hidden max-h-[90vh] flex flex-col">
-          {/* Decorative background elements */}
+         
           <div className="absolute top-0 right-0 w-40 h-40 bg-primary/6 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/6 rounded-full blur-3xl pointer-events-none" />
 
-          {/* Close button - enhanced visibility */}
+      
           <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 bg-background/40 hover:bg-primary hover:text-white text-foreground rounded-full transition duration-200 z-20 hover:scale-110 shadow-md border border-border/50"
@@ -28,7 +28,7 @@ export default function AuthModal({ isOpen, mode, onClose, onSuccess }) {
             <X size={22} />
           </button>
 
-          {/* Scrollable form area */}
+        
           <div className="p-8 relative z-10 overflow-y-auto max-h-[calc(90vh-2rem)]">
             {mode === "login" ? <LoginForm onSuccess={onSuccess} /> : <SignupForm onSuccess={onSuccess} />}
           </div>
