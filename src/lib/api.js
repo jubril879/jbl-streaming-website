@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || "https://jbl-streaming-website.vercel.app/api";
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:5000/api";
 
 const getToken = () => null;
 
@@ -37,6 +39,51 @@ export const authAPI = {
     console.log("authAPI.logout called");
     // Removed localStorage removal for authToken
   },
+
+  forgotPassword: async (email) => {
+    console.log("authAPI.forgotPassword called for:", email);
+    const response = await fetch(`${API_URL}/auth/forgot-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await response.json();
+    console.log("authAPI.forgotPassword response:", data);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to send reset code");
+    }
+    return data;
+  },
+
+  verifyResetCode: async (email, code) => {
+    console.log("authAPI.verifyResetCode called for:", email);
+    const response = await fetch(`${API_URL}/auth/verify-reset-code`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code }),
+    });
+    const data = await response.json();
+    console.log("authAPI.verifyResetCode response:", data);
+    if (!response.ok) {
+      throw new Error(data.message || "Invalid code");
+    }
+    return data;
+  },
+
+  resetPassword: async (email, code, newPassword) => {
+    console.log("authAPI.resetPassword called for:", email);
+    const response = await fetch(`${API_URL}/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code, newPassword }),
+    });
+    const data = await response.json();
+    console.log("authAPI.resetPassword response:", data);
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to reset password");
+    }
+    return data;
+  },
 };
 
 export const moviesAPI = {
@@ -45,15 +92,25 @@ export const moviesAPI = {
       const url = `${API_URL}/movies?t=${Date.now()}`;
       console.log(`moviesAPI.getAll fetching from: ${url}`);
       const response = await fetch(url);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
-        console.error(`moviesAPI.getAll Error (${response.status}):`, errorText);
+        console.error(
+          `moviesAPI.getAll Error (${response.status}):`,
+          errorText
+        );
         return [];
       }
 
       const data = await response.json();
-      console.log("moviesAPI.getAll fetched count:", Array.isArray(data) ? data.length : (data.movies ? data.movies.length : "unknown"));
+      console.log(
+        "moviesAPI.getAll fetched count:",
+        Array.isArray(data)
+          ? data.length
+          : data.movies
+          ? data.movies.length
+          : "unknown"
+      );
 
       if (Array.isArray(data)) {
         return data;
@@ -90,11 +147,11 @@ export const moviesAPI = {
     });
     const data = await response.json();
     console.log("moviesAPI.create response status:", response.status, data);
-    
+
     if (!response.ok) {
       throw new Error(data.message || "Failed to create movie");
     }
-    
+
     return data.movie || data;
   },
 
@@ -110,11 +167,11 @@ export const moviesAPI = {
     });
     const data = await response.json();
     console.log("moviesAPI.update response:", data);
-    
+
     if (!response.ok) {
       throw new Error(data.message || "Failed to update movie");
     }
-    
+
     return data.movie || data;
   },
 
@@ -128,11 +185,11 @@ export const moviesAPI = {
     });
     const data = await response.json();
     console.log("moviesAPI.delete response:", data);
-    
+
     if (!response.ok) {
       throw new Error(data.message || "Failed to delete movie");
     }
-    
+
     return data;
   },
 };
@@ -180,7 +237,9 @@ export const userAPI = {
   },
 
   addToWatchHistory: async (movieId, movieTitle, movieImage) => {
-    console.log(`userAPI.addToWatchHistory called for: ${movieTitle} (${movieId})`);
+    console.log(
+      `userAPI.addToWatchHistory called for: ${movieTitle} (${movieId})`
+    );
     const response = await fetch(`${API_URL}/users/watch-history`, {
       method: "POST",
       headers: {

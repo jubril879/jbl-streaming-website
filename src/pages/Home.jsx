@@ -81,9 +81,9 @@ export default function Home({ isAuthenticated, onLogin, onLogout, userRole }) {
             e.target.src = `https://via.placeholder.com/200x300?text=${encodeURIComponent(movie.title)}`
           }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-4">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-100 flex flex-col justify-between p-4">
           <div className="flex items-start justify-between">
-            <span className="px-3 py-1 rounded-full bg-primary/90 text-white text-xs font-bold">{movie.genre}</span>
+            <span className="px-3 py-1 rounded-full bg-primary/90 text-black text-xs font-bold">{movie.genre}</span>
             <span className="px-2 py-1 rounded bg-yellow-500/90 text-black text-xs font-bold flex items-center gap-1">
               ⭐ {(movie.rating || 0).toFixed(1)}
             </span>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import Navigation from "../components/Navigation"
 import Footer from "../components/Footer"
-import { Upload, X } from "lucide-react"
+import { Upload, X, Edit } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { moviesAPI } from "../lib/api"
 
@@ -21,6 +21,7 @@ export default function Admin({ isAuthenticated, userRole, authToken }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [editingMovie, setEditingMovie] = useState(null)
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
@@ -140,6 +141,34 @@ export default function Admin({ isAuthenticated, userRole, authToken }) {
     }
   }
 
+  const handleEdit = (movie) => {
+    setEditingMovie(movie)
+    setFormData({
+      title: movie.title,
+      genre: movie.genre,
+      rating: movie.rating,
+      year: movie.year,
+      description: movie.description,
+      poster: movie.poster,
+      videoUrl: movie.videoUrl,
+      isFeatured: movie.isFeatured,
+    })
+  }
+
+  const handleCancelEdit = () => {
+    setEditingMovie(null)
+    setFormData({
+      title: "",
+      genre: "",
+      rating: "",
+      year: new Date().getFullYear(),
+      description: "",
+      poster: "",
+      videoUrl: "",
+      isFeatured: false
+    })
+  }
+
   return (
     <main className="min-h-screen bg-background">
       <Navigation isAuthenticated={isAuthenticated} userRole={userRole} />
@@ -161,7 +190,10 @@ export default function Admin({ isAuthenticated, userRole, authToken }) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
           <div className="lg:col-span-1">
             <div className="bg-secondary rounded-2xl p-6 shadow border border-border">
-              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2"><Upload size={20} /> Post New Movie</h2>
+              <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                <Upload size={20} />
+                {editingMovie ? "Edit Movie" : "Post New Movie"}
+              </h2>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <input
@@ -257,13 +289,24 @@ export default function Admin({ isAuthenticated, userRole, authToken }) {
                   </label>
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full px-6 py-3 bg-gradient-to-r from-primary to-primary/80 text-white font-semibold rounded-xl shadow hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? "Posting..." : "Post Movie"}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="flex-1 px-6 py-3 bg-gradient-to-r from-primary to-primary/80 text-white font-semibold rounded-xl shadow hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? (editingMovie ? "Updating..." : "Posting...") : (editingMovie ? "Update Movie" : "Post Movie")}
+                  </button>
+                  {editingMovie && (
+                    <button
+                      type="button"
+                      onClick={handleCancelEdit}
+                      className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-xl shadow hover:scale-105 transition"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
               </form>
             </div>
           </div>
@@ -285,12 +328,20 @@ export default function Admin({ isAuthenticated, userRole, authToken }) {
                             e.target.src = `https://via.placeholder.com/200x300?text=${encodeURIComponent(movie.title)}`
                           }}
                         />
-                        <button
-                          onClick={() => handleDelete(movie._id)}
-                          className="absolute top-2 right-2 p-2 bg-red-600/90 hover:bg-red-700 text-white rounded-lg z-10 transition"
-                        >
-                          <X size={16} />
-                        </button>
+                        <div className="absolute top-2 right-2 flex gap-1 z-10">
+                          <button
+                            onClick={() => handleEdit(movie)}
+                            className="p-2 bg-blue-600/90 hover:bg-blue-700 text-white rounded-lg transition"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(movie._id)}
+                            className="p-2 bg-red-600/90 hover:bg-red-700 text-white rounded-lg transition"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
                       </div>
                       <div className="p-3">
                         <h3 className="text-sm font-semibold text-foreground line-clamp-1">{movie.title}</h3>

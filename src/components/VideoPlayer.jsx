@@ -75,7 +75,7 @@ export default function VideoPlayer({ movieId, title, poster, videoUrl }) {
       <video
         ref={videoRef}
         src={videoUrl || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4"}
-        className="w-full h-80 object-cover"
+        className="w-full aspect-video object-cover"
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         poster={poster}

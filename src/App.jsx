@@ -20,7 +20,7 @@ import Terms from "./pages/Terms"
 import Cookies from "./pages/Cookies"
 import SocialTwitter from "./pages/SocialTwitter"
 import SocialInstagram from "./pages/SocialInstagram"
-
+import forgotpasswordmoal from "./components/ForgotPasswordModal"
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
@@ -87,6 +87,7 @@ function App() {
         <Route path="/settings" element={<Settings isAuthenticated={isAuthenticated} currentUser={currentUser} onUpdateUser={handleUpdateUser} onLogout={handleLogout} onDeleteAccount={handleDeleteAccount} userRole={userRole} />} />
         <Route path="/register-admin" element={<RegisterAdmin />} />
         <Route path="/admin-login" element={<AdminLoginPage onLogin={handleLogin} />} />
+        
         <Route path="/admin" element={<Admin isAuthenticated={isAuthenticated} userRole={userRole} authToken={authToken} />} />
         <Route path="/about" element={<About />} />
         <Route path="/careers" element={<Careers />} />

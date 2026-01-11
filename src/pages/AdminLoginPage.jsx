@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Shield, Eye, EyeOff } from 'lucide-react';
 import { authAPI } from '../lib/api';
-const API_URL = 'https://jbl-streaming-website3-1.onrender.com'
 export default function AdminLoginPage({ onLogin }) {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [adminEmail, setAdminEmail] = useState('');
+  const [loginData, setLoginData] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +30,7 @@ export default function AdminLoginPage({ onLogin }) {
           setIsLoading(false);
           return;
         }
-        // Pass the full login response (user and token) to onLogin
+        // Directly navigate to admin page after successful login
         if (onLogin) {
           onLogin(data);
         }
@@ -44,6 +46,8 @@ export default function AdminLoginPage({ onLogin }) {
     }
   };
 
+
+
   const goToRegisterAdmin = () => {
     navigate('/register-admin');
   };
@@ -52,7 +56,7 @@ export default function AdminLoginPage({ onLogin }) {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-700">
-          {/* Header */}
+         
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
               <div className="p-3 bg-gradient-to-br from-red-600 to-red-700 rounded-full">
@@ -63,9 +67,9 @@ export default function AdminLoginPage({ onLogin }) {
             <p className="text-gray-400 text-sm">Access the CinemaHub admin dashboard</p>
           </div>
 
-          {/* Form */}
+    
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Email Input */}
+           
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Email Address</label>
               <div className="relative">
@@ -82,7 +86,7 @@ export default function AdminLoginPage({ onLogin }) {
               </div>
             </div>
 
-            {/* Password Input */}
+            
             <div>
               <label className="block text-gray-300 text-sm font-medium mb-2">Password</label>
               <div className="relative">
@@ -106,7 +110,7 @@ export default function AdminLoginPage({ onLogin }) {
               </div>
             </div>
 
-            {/* Error Message */}
+          
             {error && (
               <div className="bg-red-900 border border-red-700 rounded-lg p-3 text-red-200 text-sm flex items-center">
                 <span className="mr-2">⚠️</span>
@@ -114,7 +118,7 @@ export default function AdminLoginPage({ onLogin }) {
               </div>
             )}
 
-            {/* Submit Button */}
+          
             <button
               type="submit"
               disabled={isLoading}
@@ -124,7 +128,7 @@ export default function AdminLoginPage({ onLogin }) {
             </button>
           </form>
 
-          {/* Divider */}
+         
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-600"></div>
@@ -134,17 +138,17 @@ export default function AdminLoginPage({ onLogin }) {
             </div>
           </div>
 
-          {/* Register Admin Button */}
-          <button
+         
+          {/* <button
             type="button"
             onClick={goToRegisterAdmin}
             className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-2.5 rounded-lg transition duration-200"
           >
             Register Admin Account
-          </button>
+          </button> */}
 
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-gray-700 rounded-lg border border-gray-600">
+       
+          {/* <div className="mt-6 p-4 bg-gray-700 rounded-lg border border-gray-600">
             <p className="text-gray-300 text-xs font-semibold mb-2">📝 Demo Credentials:</p>
             <ul className="text-gray-400 text-xs space-y-1">
               <li>
@@ -154,9 +158,10 @@ export default function AdminLoginPage({ onLogin }) {
                 <strong>Password:</strong> admin123
               </li>
             </ul>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
-  );
+  )
 }
+
