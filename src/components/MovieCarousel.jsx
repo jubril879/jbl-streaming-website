@@ -21,7 +21,7 @@ export default function MovieCarousel({ title, isAuthenticated, onWatchClick }) 
   const [movies, setMovies] = useState(DEFAULT_MOVIES)
   const [loading, setLoading] = useState(true)
 
-  // Fetch movies from backend
+  
   useEffect(() => {
     const fetchMovies = async () => {
       try {
