@@ -21,6 +21,9 @@ import Cookies from "./pages/Cookies"
 import SocialTwitter from "./pages/SocialTwitter"
 import SocialInstagram from "./pages/SocialInstagram"
 import forgotpasswordmoal from "./components/ForgotPasswordModal"
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api"
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
@@ -29,29 +32,46 @@ function App() {
 
   useEffect(() => {
     try {
-      // Removed localStorage usage for user and token
-      const user = null
-      const token = null
-      
-      if (user && token) {
-        const userData = JSON.parse(user)
-        setCurrentUser(userData)
-        setIsAuthenticated(true)
-        setUserRole(userData.role || "user")
-      }
+      // Check if user has active session with backend (cookie-based)
+      fetchUserData()
     } catch (error) {
       console.error("Error initializing app:", error)
     }
   }, [])
 
-  const handleLogin = (userData) => {
-    setCurrentUser(userData.user || userData)
-    setIsAuthenticated(true)
-    setUserRole((userData.user || userData).role || "user")
-    if (userData.token) setAuthToken(userData.token)
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch(`${API_URL}/users/profile`, {
+        credentials: "include",
+      })
+      if (response.ok) {
+        const userData = await response.json()
+        setCurrentUser(userData)
+        setIsAuthenticated(true)
+        setUserRole(userData.role || "user")
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error)
+    }
   }
 
-  const handleLogout = () => {
+  const handleLogin = (userData) => {
+    const user = userData.user || userData
+    setCurrentUser(user)
+    setIsAuthenticated(true)
+    setUserRole(user.role || "user")
+  }
+
+  const handleLogout = async () => {
+    try {
+      // Call backend logout endpoint to clear cookie
+      await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      })
+    } catch (error) {
+      console.error("Error during logout:", error)
+    }
     setCurrentUser(null)
     setIsAuthenticated(false)
     setUserRole("user")
@@ -62,7 +82,6 @@ function App() {
     if (!currentUser) return
     const updated = { ...currentUser, ...updates }
     setCurrentUser(updated)
-    // Removed localStorage set for currentUser
   }
 
   const handleDeleteAccount = () => {

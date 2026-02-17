@@ -1,8 +1,4 @@
-const API_URL =
-  import.meta.env.VITE_API_URL ||
-  "http://localhost:5000/api";
-
-const getToken = () => null;
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 export const authAPI = {
   register: async (name, email, password) => {
@@ -11,11 +7,12 @@ export const authAPI = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("authAPI.register response:", data);
-    if (data.token) {
-      // Removed localStorage set for authToken
+    if (!response.ok) {
+      throw new Error(data.message || "Registration failed");
     }
     return data;
   },
@@ -26,18 +23,29 @@ export const authAPI = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("authAPI.login response:", data);
-    if (data.token) {
-      // Removed localStorage set for authToken
+    if (!response.ok) {
+      throw new Error(data.message || "Login failed");
     }
     return data;
   },
 
-  logout: () => {
+  logout: async () => {
     console.log("authAPI.logout called");
-    // Removed localStorage removal for authToken
+    try {
+      const response = await fetch(`${API_URL}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log("authAPI.logout response:", data);
+      return data;
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   },
 
   forgotPassword: async (email) => {
@@ -46,6 +54,7 @@ export const authAPI = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("authAPI.forgotPassword response:", data);
@@ -61,6 +70,7 @@ export const authAPI = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, code }),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("authAPI.verifyResetCode response:", data);
@@ -76,6 +86,7 @@ export const authAPI = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, code, newPassword }),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("authAPI.resetPassword response:", data);
@@ -91,13 +102,15 @@ export const moviesAPI = {
     try {
       const url = `${API_URL}/movies?t=${Date.now()}`;
       console.log(`moviesAPI.getAll fetching from: ${url}`);
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        credentials: "include",
+      });
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error(
           `moviesAPI.getAll Error (${response.status}):`,
-          errorText
+          errorText,
         );
         return [];
       }
@@ -108,8 +121,8 @@ export const moviesAPI = {
         Array.isArray(data)
           ? data.length
           : data.movies
-          ? data.movies.length
-          : "unknown"
+            ? data.movies.length
+            : "unknown",
       );
 
       if (Array.isArray(data)) {
@@ -129,7 +142,9 @@ export const moviesAPI = {
 
   getById: async (id) => {
     console.log("moviesAPI.getById called for ID:", id);
-    const response = await fetch(`${API_URL}/movies/${id}`);
+    const response = await fetch(`${API_URL}/movies/${id}`, {
+      credentials: "include",
+    });
     const data = await response.json();
     console.log("moviesAPI.getById response:", data);
     return data;
@@ -141,9 +156,9 @@ export const moviesAPI = {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(movieData),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("moviesAPI.create response status:", response.status, data);
@@ -161,9 +176,9 @@ export const moviesAPI = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
       body: JSON.stringify(movieData),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("moviesAPI.update response:", data);
@@ -179,9 +194,7 @@ export const moviesAPI = {
     console.log("moviesAPI.delete called for ID:", id);
     const response = await fetch(`${API_URL}/movies/${id}`, {
       method: "DELETE",
-      headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
+      credentials: "include",
     });
     const data = await response.json();
     console.log("moviesAPI.delete response:", data);
@@ -199,9 +212,7 @@ export const userAPI = {
     console.log("userAPI.getProfile called");
     const response = await fetch(`${API_URL}/users/profile`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
+      credentials: "include",
     });
     const data = await response.json();
     console.log("userAPI.getProfile response:", data);
@@ -214,9 +225,9 @@ export const userAPI = {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
       },
       body: JSON.stringify(profileData),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("userAPI.updateProfile response:", data);
@@ -227,9 +238,7 @@ export const userAPI = {
     console.log("userAPI.getWatchHistory called");
     const response = await fetch(`${API_URL}/users/watch-history`, {
       method: "GET",
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-      },
+      credentials: "include",
     });
     const data = await response.json();
     console.log("userAPI.getWatchHistory response:", data);
@@ -238,15 +247,15 @@ export const userAPI = {
 
   addToWatchHistory: async (movieId, movieTitle, movieImage) => {
     console.log(
-      `userAPI.addToWatchHistory called for: ${movieTitle} (${movieId})`
+      `userAPI.addToWatchHistory called for: ${movieTitle} (${movieId})`,
     );
     const response = await fetch(`${API_URL}/users/watch-history`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getToken()}`,
       },
       body: JSON.stringify({ movieId, movieTitle, movieImage }),
+      credentials: "include",
     });
     const data = await response.json();
     console.log("userAPI.addToWatchHistory response:", data);
